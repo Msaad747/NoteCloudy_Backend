@@ -15,24 +15,27 @@ notes_router.post(
     body("title")
       .isLength({ min: 3, max: 20 })
       .withMessage("Title must be between 3 and 20 characters"),
-    body("description")
-      .isLength({ min: 10, max: 255 })
-      .withMessage("Description must be between 10 and 255 characters"),
-    body("tags").optional().isString().withMessage("Tags must be a string"),
+    body("description").optional(),
+    body("tags").optional(),
   ],
   async (req, res) => {
     // Check for validation errors
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
     try {
-      const { title, description, tags } = req.body;
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const { title, description, tag } = req.body;
 
       const userId = req.user.userId; // Get userId from the verified token
 
-      const note = await Notes.create({ title, description, tags, userId });
+      const note = await Notes.create({
+        title,
+        description,
+        tag: tag === "" ? undefined : tag,
+        userId,
+      });
       res.status(201).json({ message: "Note created successfully", note });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -72,12 +75,12 @@ notes_router.put(
       .optional()
       .isLength({ min: 10, max: 255 })
       .withMessage("Description must be between 10 and 255 characters"),
-    body("tags").optional().isString().withMessage("Tags must be a string"),
+    body("tag").optional().isString().withMessage("Tags must be a string"),
   ],
   async (req, res) => {
     try {
       const { id } = req.params;
-      const { title, description, tags } = req.body;
+      const { title, description, tag } = req.body;
 
       const note = await Notes.findByPk(id);
       if (!note) {
@@ -92,12 +95,12 @@ notes_router.put(
       }
       const updatedTitle = title ?? note.title;
       const updatedDescription = description ?? note.description;
-      const updatedTags = tags ?? note.tags;
-
+      const updatedTag =
+        tag?.trim() === "" || tag === undefined ? "General" : tag;
       await note.update({
         title: updatedTitle,
         description: updatedDescription,
-        tags: updatedTags,
+        tag: updatedTag,
       });
       res.status(200).json({ message: "Note updated successfully", note });
     } catch (err) {

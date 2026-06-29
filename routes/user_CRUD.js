@@ -3,6 +3,7 @@ import User from "../Models/Users.js";
 import "dotenv/config";
 import { body, validationResult } from "express-validator";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { verifyToken } from "../authJwt.js";
 import { isAdmin } from "../isAdmin.js";
 
@@ -10,7 +11,7 @@ const router = express.Router();
 
 // CREATE USER
 router.post(
-  "/",
+  "/createuser",
   [
     body("name")
       .isLength({ min: 3, max: 20 })
@@ -38,11 +39,22 @@ router.post(
         password: hashedPassword,
         isAdmin,
       });
+
       const userData = user.toJSON();
       delete userData.isAdmin;
-      res.json({
+
+      const token = jwt.sign(
+        { userId: user.id, isAdmin: user.isAdmin },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: process.env.JWT_EXPIRES_IN,
+        },
+      );
+
+    return  res.json({
         message: "User created",
         user: userData,
+        token:token,
       });
     } catch (err) {
       // 👇 Sequelize unique constraint error
@@ -171,21 +183,21 @@ router.delete(
         });
       }
 
-      const { password } = req.body;
+      // const { password } = req.body;
 
-      if (!password) {
-        return res.status(400).json({
-          message: "Password is required",
-        });
-      }
+      // if (!password) {
+      //   return res.status(400).json({
+      //     message: "Password is required",
+      //   });
+      // }
 
-      const comparePass = await bcrypt.compare(password, user.password);
+      // const comparePass = await bcrypt.compare(password, user.password);
 
-      if (!comparePass) {
-        return res.status(401).json({
-          message: "Incorrect password",
-        });
-      }
+      // if (!comparePass) {
+      //   return res.status(401).json({
+      //     message: "Incorrect password",
+      //   });
+      // }
 
       await user.destroy();
 

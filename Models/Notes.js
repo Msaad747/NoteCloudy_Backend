@@ -21,9 +21,7 @@ const Notes = sequelize.define("Notes", {
   description: {
     type: DataTypes.TEXT,
     allowNull: true,
-    validate: {
-      len: [10, 255],
-    },
+    
   },
   tag: {
     type: DataTypes.STRING,
