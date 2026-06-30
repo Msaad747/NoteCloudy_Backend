@@ -34,6 +34,7 @@ router.post(
 
       const isAdmin = email === process.env.ADMIN_EMAIL;
       console.log(isAdmin);
+      console.log(req.body);
       const user = await User.create({
         ...req.body,
         password: hashedPassword,
@@ -57,15 +58,13 @@ router.post(
         token:token,
       });
     } catch (err) {
-      // 👇 Sequelize unique constraint error
-      if (err.name === "SequelizeUniqueConstraintError") {
-        return res.status(400).json({
-          message: "Email already exists",
-        });
-      }
+  console.error("Signup Error:", err);
 
-      res.status(500).json({ error: err.message });
-    }
+  return res.status(500).json({
+    error: err.message,
+    stack: err.stack,
+  });
+}
   },
 );
 
