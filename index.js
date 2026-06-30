@@ -22,6 +22,7 @@ app.use(
     credentials: true,
   })
 );
+app.options("*", cors());
 app.use(express.json());
 app.use("/usersData", router);
 app.use("/", login_router);
