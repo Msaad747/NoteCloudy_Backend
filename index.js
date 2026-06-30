@@ -12,17 +12,8 @@ const app = express();
 
 const PORT = process.env.PORT || 3004;
 
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "https://note-cloudy.vercel.app",
-    ],
-    methods:["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
 
+app.use(cors());
 app.use(express.json());
 app.use("/usersData", router);
 app.use("/", login_router);
