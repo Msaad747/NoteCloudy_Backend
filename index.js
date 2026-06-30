@@ -18,6 +18,7 @@ app.use(
       "http://localhost:3000",
       "https://note-cloudy.vercel.app",
     ],
+    methods:["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
