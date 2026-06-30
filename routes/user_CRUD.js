@@ -29,7 +29,7 @@ router.post(
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { name, email, password } = req.body;
+      const { name, email, password, age } = req.body;
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const isAdmin = email === process.env.ADMIN_EMAIL;
@@ -38,6 +38,7 @@ router.post(
       const user = await User.create({
         ...req.body,
         password: hashedPassword,
+        age:age??null,
         isAdmin,
       });
 
