@@ -54,6 +54,7 @@ login_router.post(
       res.status(200).json({
         message: "Login successful",
         token,
+        Admin: user.isAdmin,
       });
     } catch (err) {
       res.status(500).json({ error: err.message });
