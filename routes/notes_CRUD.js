@@ -53,9 +53,9 @@ notes_router.get("/fetchAllNotes", verifyToken, async (req, res) => {
       const noteUsers = await Promise.all(
         allNotes.map((n) => User.findByPk(n.userId)),
       );
-      const userNames = noteUsers.map((user) => user.name);
       
-      return res.status(200).json({ notes: allNotes, noteUsers, userNames, source: "admin - all notes" });
+      
+      return res.status(200).json({ notes: allNotes, noteUsers, source: "admin - all notes" });
     }
 
     const notes = await Notes.findAll({ where: { userId } });
