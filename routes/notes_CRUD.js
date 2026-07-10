@@ -50,7 +50,7 @@ notes_router.get("/fetchAllNotes", verifyToken, async (req, res) => {
     // If admin, fetch all notes; otherwise fetch only user's notes
     if (req.user.isAdmin) {
       const allNotes = await Notes.findAll();
-      const noteUsers= await User.findOne({where:{id:allNotes.userId}});
+      const noteUsers= await User.findbyPk(allNotes.userId);
 
       return res
         .status(200)
